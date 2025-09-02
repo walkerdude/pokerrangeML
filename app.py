@@ -20,6 +20,10 @@ from data_generator import PokerDataGenerator, Action, HandStrength
 from feature_engineering import PokerFeatureEngineer
 from range_classifier import PokerRangeClassifier
 
+# Check scikit-learn version compatibility
+import sklearn
+print(f"✓ Scikit-learn version: {sklearn.__version__}")
+
 app = Flask(__name__)
 app.secret_key = 'poker_range_classifier_secret_key'
 
