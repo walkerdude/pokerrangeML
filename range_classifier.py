@@ -284,7 +284,9 @@ class PokerRangeClassifier:
         plt.ylabel('True Label')
         plt.xlabel('Predicted Label')
         plt.tight_layout()
-        plt.show()
+        # Don't call plt.show() on headless servers
+        # plt.show()
+        plt.close()
     
     def plot_feature_importance(self, top_n: int = 20) -> str:
         """Plot feature importance (returns base64 encoded image or error message)"""
@@ -350,7 +352,9 @@ class PokerRangeClassifier:
                     ha='center', va='bottom')
         
         plt.tight_layout()
-        plt.show()
+        # Don't call plt.show() on headless servers
+        # plt.show()
+        plt.close()
 
 def train_range_classifier(X: np.ndarray, y: np.ndarray, feature_names: List[str],
                           test_size: float = 0.2, random_state: int = 42) -> PokerRangeClassifier:
@@ -377,10 +381,10 @@ def train_range_classifier(X: np.ndarray, y: np.ndarray, feature_names: List[str
     # Final evaluation
     evaluation_results = classifier.evaluate_model(X_test, y_test)
     
-    # Plot results
-    classifier.plot_confusion_matrix(evaluation_results['confusion_matrix'])
-    classifier.plot_feature_importance()
-    classifier.plot_class_distribution(y, "Training Data Class Distribution")
+    # Plot results (commented out for headless server compatibility)
+    # classifier.plot_confusion_matrix(evaluation_results['confusion_matrix'])
+    # classifier.plot_feature_importance()
+    # classifier.plot_class_distribution(y, "Training Data Class Distribution")
     
     return classifier, evaluation_results
 
