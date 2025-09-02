@@ -325,9 +325,10 @@ def train_model():
         
         return jsonify({
             'success': True,
-            'accuracy': results['accuracy'],
+            'accuracy': results.get('accuracy', 'N/A'),
             'num_hands': num_hands,
-            'num_features': len(feature_names)
+            'num_features': len(feature_names),
+            'results': results
         })
         
     except Exception as e:
