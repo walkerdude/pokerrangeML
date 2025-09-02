@@ -71,12 +71,12 @@ class PokerRangeClassifier:
             if X_val is not None and y_val is not None:
                 y_pred = model.predict(X_val)
                 accuracy = accuracy_score(y_val, y_pred)
-                results[name] = accuracy
+                results[name] = float(accuracy)
                 print(f"{name} validation accuracy: {accuracy:.4f}")
             else:
                 # Use cross-validation
                 cv_scores = cross_val_score(model, X_train, y_train, cv=5, scoring='accuracy')
-                results[name] = cv_scores.mean()
+                results[name] = float(cv_scores.mean())
                 print(f"{name} CV accuracy: {cv_scores.mean():.4f} (+/- {cv_scores.std() * 2:.4f})")
         
         # Select best model
@@ -133,7 +133,17 @@ class PokerRangeClassifier:
         self.best_model = grid_search.best_estimator_
         self.models[model_name] = self.best_model
         
-        return self.best_model
+        # Convert best_params_ to regular dict to avoid numpy types
+        best_params = {}
+        for key, value in grid_search.best_params_.items():
+            if hasattr(value, 'item') and hasattr(value, 'size') and value.size == 1:
+                best_params[key] = value.item()
+            elif isinstance(value, np.ndarray):
+                best_params[key] = value.tolist()
+            else:
+                best_params[key] = value
+        
+        return best_params
     
     def evaluate_model(self, X_test: np.ndarray, y_test: np.ndarray, 
                       model_name: str = None) -> Dict[str, Any]:
@@ -153,22 +163,46 @@ class PokerRangeClassifier:
         
         # Calculate metrics
         accuracy = accuracy_score(y_test, y_pred)
-        report = classification_report(y_test, y_pred, target_names=self.class_names, output_dict=True)
+        
+        # Get actual class names from the data
+        unique_classes = np.unique(y_test)
+        actual_class_names = [f'Class_{i}' for i in unique_classes]
+        
+        # Always use the default report to avoid class name mismatches
+        report = classification_report(y_test, y_pred, output_dict=True)
         
         # Confusion matrix
         cm = confusion_matrix(y_test, y_pred)
         
+        # Convert numpy arrays to lists for JSON serialization
+        def convert_numpy_types(obj):
+            if isinstance(obj, dict):
+                return {k: convert_numpy_types(v) for k, v in obj.items()}
+            elif isinstance(obj, list):
+                return [convert_numpy_types(item) for item in obj]
+            elif isinstance(obj, np.ndarray):
+                if obj.size == 1:
+                    return obj.item()
+                else:
+                    return obj.tolist()
+            elif hasattr(obj, 'item') and hasattr(obj, 'size') and obj.size == 1:
+                return obj.item()
+            elif isinstance(obj, (np.integer, np.floating, np.bool_)):
+                return obj.item()
+            else:
+                return obj
+        
         results = {
-            'accuracy': accuracy,
-            'classification_report': report,
-            'confusion_matrix': cm,
-            'predictions': y_pred,
-            'probabilities': y_pred_proba
+            'accuracy': float(accuracy),
+            'classification_report': convert_numpy_types(report),
+            'confusion_matrix': convert_numpy_types(cm),
+            'predictions': convert_numpy_types(y_pred),
+            'probabilities': convert_numpy_types(y_pred_proba)
         }
         
         print(f"Test Accuracy: {accuracy:.4f}")
         print("\nClassification Report:")
-        print(classification_report(y_test, y_pred, target_names=self.class_names))
+        print(classification_report(y_test, y_pred))
         
         return results
     
@@ -363,9 +397,9 @@ def train_range_classifier(X: np.ndarray, y: np.ndarray, feature_names: List[str
     print("Starting Poker Range Classification Training Pipeline")
     print("=" * 60)
     
-    # Split data
+    # Split data - use non-stratified split to avoid class balance issues
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=test_size, random_state=random_state, stratify=y
+        X, y, test_size=test_size, random_state=random_state
     )
     
     # Initialize classifier
