@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Embed - Poker Range Classifier</title>
+    <style>
+        .portfolio-embed {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .embed-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .embed-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #0d6efd, #0056b3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+        
+        .embed-subtitle {
+            color: #6c757d;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+        
+        .embed-description {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .embed-iframe {
+            width: 100%;
+            height: 800px;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .embed-footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #6c757d;
+        }
+        
+        .tech-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .tech-badge {
+            background: linear-gradient(135deg, #0d6efd, #0056b3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        @media (max-width: 768px) {
+            .embed-title {
+                font-size: 2rem;
+            }
+            
+            .embed-iframe {
+                height: 600px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="portfolio-embed">
+        <div class="embed-header">
+            <h1 class="embed-title">Poker Range Classifier</h1>
+            <p class="embed-subtitle">Machine Learning-Powered Hand Range Analysis</p>
+            
+            <div class="tech-badges">
+                <span class="tech-badge">Python</span>
+                <span class="tech-badge">Machine Learning</span>
+                <span class="tech-badge">Scikit-learn</span>
+                <span class="tech-badge">Flask</span>
+                <span class="tech-badge">Bootstrap</span>
+                <span class="tech-badge">Chart.js</span>
+            </div>
+        </div>
+        
+        <div class="embed-description">
+            <p class="lead">
+                This system uses advanced machine learning to classify opponent hand ranges into four categories: 
+                <strong>Nuts</strong>, <strong>Strong</strong>, <strong>Marginal</strong>, and <strong>Bluff</strong>.
+            </p>
+            <p>
+                By analyzing betting patterns, position, pot dynamics, and action sequences, the model achieves 
+                <strong>99.5% accuracy</strong> in predicting hand strength. Test it out below!
+            </p>
+        </div>
+        
+        <!-- Embed the demo -->
+        <iframe 
+            src="portfolio_demo.html" 
+            class="embed-iframe"
+            title="Poker Range Classifier Demo"
+            allowfullscreen>
+        </iframe>
+        
+        <div class="embed-footer">
+            <p>
+                <strong>Project Features:</strong> 113+ Engineered Features • 99.5% Accuracy • Real-time Predictions • 
+                Multiple ML Algorithms • Responsive Web Interface
+            </p>
+            <p>
+                <small>Built with Python, Scikit-learn, Flask, and modern web technologies</small>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

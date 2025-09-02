@@ -1,0 +1,319 @@
+{% extends "base.html" %}
+
+{% block title %}Poker Range Classifier - About{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Header -->
+    <div class="col-12">
+        <div class="text-center mb-5">
+            <h1 class="display-4 text-primary">
+                <i class="fas fa-info-circle me-3"></i>
+                About the System
+            </h1>
+            <p class="lead text-muted">
+                Understanding how the Poker Range Classification System works
+            </p>
+        </div>
+    </div>
+
+    <!-- System Overview -->
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-cogs me-2"></i>
+                    System Overview
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="lead">
+                    The Poker Range Classification System uses advanced machine learning to analyze poker action sequences 
+                    and predict the likely strength of an opponent's hand.
+                </p>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-target me-2"></i>What It Does</h6>
+                        <ul>
+                            <li>Analyzes betting patterns and action sequences</li>
+                            <li>Considers position, pot dynamics, and stack sizes</li>
+                            <li>Classifies hands into four strength categories</li>
+                            <li>Provides confidence scores for predictions</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-chart-line me-2"></i>Performance</h6>
+                        <ul>
+                            <li><strong>99.5% accuracy</strong> on test data</li>
+                            <li>Balanced performance across all hand types</li>
+                            <li>Real-time classification capabilities</li>
+                            <li>Comprehensive feature engineering</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hand Strength Categories -->
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-layer-group me-2"></i>
+                    Hand Strength Categories
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card border-danger h-100">
+                            <div class="card-header bg-danger text-white">
+                                <h6 class="mb-0"><i class="fas fa-crown me-2"></i>Nuts</h6>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">
+                                    <strong>Premium hands</strong> - The best possible hands in the situation.
+                                </p>
+                                <small class="text-muted">
+                                    Examples: AA, KK, AKs, sets on dry boards
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card border-warning h-100">
+                            <div class="card-header bg-warning text-dark">
+                                <h6 class="mb-0"><i class="fas fa-star me-2"></i>Strong</h6>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">
+                                    <strong>Good hands</strong> - Strong holdings that can win at showdown.
+                                </p>
+                                <small class="text-muted">
+                                    Examples: AQ, JJ, TT, top pair with good kicker
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card border-info h-100">
+                            <div class="card-header bg-info text-white">
+                                <h6 class="mb-0"><i class="fas fa-balance-scale me-2"></i>Marginal</h6>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">
+                                    <strong>Medium hands</strong> - Decent holdings that need careful play.
+                                </p>
+                                <small class="text-muted">
+                                    Examples: A9, KQ, 88, weak pairs
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card border-success h-100">
+                            <div class="card-header bg-success text-white">
+                                <h6 class="mb-0"><i class="fas fa-mask me-2"></i>Bluff</h6>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">
+                                    <strong>Weak hands</strong> - Poor holdings or pure bluffs.
+                                </p>
+                                <small class="text-muted">
+                                    Examples: 72o, missed draws, air hands
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Technical Details -->
+    <div class="col-lg-8 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-microchip me-2"></i>
+                    Technical Architecture
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-database me-2"></i>Data Generation</h6>
+                        <ul>
+                            <li>Simulates realistic poker hands</li>
+                            <li>Generates action sequences for all streets</li>
+                            <li>Creates position, pot, and stack features</li>
+                            <li>Assigns hand strengths based on poker theory</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-cogs me-2"></i>Feature Engineering</h6>
+                        <ul>
+                            <li>Extracts 113+ engineered features</li>
+                            <li>Analyzes aggression patterns</li>
+                            <li>Creates temporal and interaction features</li>
+                            <li>Handles missing values and scaling</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-brain me-2"></i>Machine Learning</h6>
+                        <ul>
+                            <li>Multiple algorithms (Random Forest, Gradient Boosting, etc.)</li>
+                            <li>Automatic hyperparameter tuning</li>
+                            <li>Cross-validation for model selection</li>
+                            <li>Ensemble approach for robustness</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-chart-bar me-2"></i>Evaluation</h6>
+                        <ul>
+                            <li>Comprehensive performance metrics</li>
+                            <li>Confusion matrices and ROC curves</li>
+                            <li>Feature importance analysis</li>
+                            <li>Real-time prediction confidence</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Features -->
+    <div class="col-lg-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-key me-2"></i>
+                    Key Features
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6><i class="fas fa-bolt me-2"></i>Real-time Analysis</h6>
+                    <p class="small">Instant classification of hand ranges based on action history.</p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6><i class="fas fa-chart-pie me-2"></i>Probability Distribution</h6>
+                    <p class="small">Shows confidence levels for each hand strength category.</p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6><i class="fas fa-users me-2"></i>Multi-player Support</h6>
+                    <p class="small">Works with 2-9 player games and different positions.</p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6><i class="fas fa-mobile-alt me-2"></i>Web Interface</h6>
+                    <p class="small">User-friendly web application accessible from any device.</p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6><i class="fas fa-cogs me-2"></i>Model Training</h6>
+                    <p class="small">Easy model training with customizable dataset sizes.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Usage Instructions -->
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-play-circle me-2"></i>
+                    How to Use
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="text-center mb-3">
+                            <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                <i class="fas fa-brain fa-2x"></i>
+                            </div>
+                        </div>
+                        <h6 class="text-center">1. Train the Model</h6>
+                        <p class="text-center small">
+                            Start by training a model with your desired number of hands. 
+                            More hands = better accuracy but longer training time.
+                        </p>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="text-center mb-3">
+                            <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                <i class="fas fa-search fa-2x"></i>
+                            </div>
+                        </div>
+                        <h6 class="text-center">2. Input Hand Data</h6>
+                        <p class="text-center small">
+                            Enter the opponent's position, pot size, stack size, 
+                            number of players, and action sequence.
+                        </p>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="text-center mb-3">
+                            <div class="bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                <i class="fas fa-chart-pie fa-2x"></i>
+                            </div>
+                        </div>
+                        <h6 class="text-center">3. Get Results</h6>
+                        <p class="text-center small">
+                            Receive the predicted hand strength, confidence level, 
+                            and probability distribution across all categories.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Limitations -->
+    <div class="col-12 mb-4">
+        <div class="card border-warning">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Limitations & Considerations
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Model Limitations</h6>
+                        <ul>
+                            <li>Based on simulated data, not real poker hands</li>
+                            <li>Doesn't consider specific cards or board texture</li>
+                            <li>Assumes rational opponent behavior</li>
+                            <li>Limited to the four hand strength categories</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Practical Considerations</h6>
+                        <ul>
+                            <li>Use as a tool, not a replacement for poker skill</li>
+                            <li>Consider opponent tendencies and table dynamics</li>
+                            <li>Account for tournament vs cash game differences</li>
+                            <li>Remember that poker involves incomplete information</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

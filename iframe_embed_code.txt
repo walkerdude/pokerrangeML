@@ -1,0 +1,77 @@
+<!-- Copy this code into your portfolio website to embed the Poker Range Classifier demo -->
+
+<!-- Option 1: Simple iframe embed -->
+<iframe 
+    src="https://your-domain.com/poker-range-classifier/portfolio_demo.html" 
+    width="100%" 
+    height="800px" 
+    style="border: none; border-radius: 15px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);"
+    title="Poker Range Classifier Demo"
+    allowfullscreen>
+</iframe>
+
+<!-- Option 2: Responsive iframe with custom styling -->
+<div style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+    <h2 style="text-align: center; color: #0d6efd; margin-bottom: 20px;">
+        🃏 Poker Range Classifier Demo
+    </h2>
+    <p style="text-align: center; color: #6c757d; margin-bottom: 30px;">
+        Machine Learning-Powered Hand Range Analysis with 99.5% Accuracy
+    </p>
+    
+    <iframe 
+        src="https://your-domain.com/poker-range-classifier/portfolio_demo.html" 
+        width="100%" 
+        height="800px" 
+        style="border: none; border-radius: 15px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);"
+        title="Poker Range Classifier Demo"
+        allowfullscreen>
+    </iframe>
+    
+    <div style="text-align: center; margin-top: 20px; color: #6c757d;">
+        <small>Built with Python, Scikit-learn, Flask, and modern web technologies</small>
+    </div>
+</div>
+
+<!-- Option 3: GitHub Pages embed (if you host on GitHub) -->
+<iframe 
+    src="https://your-username.github.io/poker-range-classifier/portfolio_demo.html" 
+    width="100%" 
+    height="800px" 
+    style="border: none; border-radius: 15px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);"
+    title="Poker Range Classifier Demo"
+    allowfullscreen>
+</iframe>
+
+<!-- Option 4: Netlify/Vercel embed (if you host on these platforms) -->
+<iframe 
+    src="https://your-app-name.netlify.app/portfolio_demo.html" 
+    width="100%" 
+    height="800px" 
+    style="border: none; border-radius: 15px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);"
+    title="Poker Range Classifier Demo"
+    allowfullscreen>
+</iframe>
+
+<!-- CSS for responsive design -->
+<style>
+    @media (max-width: 768px) {
+        iframe {
+            height: 600px !important;
+        }
+    }
+</style>
+
+<!-- JavaScript for dynamic height adjustment -->
+<script>
+    // Adjust iframe height based on content
+    function adjustIframeHeight() {
+        const iframe = document.querySelector('iframe');
+        if (iframe) {
+            iframe.style.height = window.innerHeight * 0.8 + 'px';
+        }
+    }
+    
+    window.addEventListener('resize', adjustIframeHeight);
+    window.addEventListener('load', adjustIframeHeight);
+</script>
