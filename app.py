@@ -30,18 +30,30 @@ feature_engineer = None
 # Load the trained model
 try:
     print("Loading proper working model...")
-    model_package = joblib.load('poker_range_classifier_proper.pkl')
+    # Try to load the proper model first
+    if os.path.exists('poker_range_classifier_proper.pkl'):
+        model_package = joblib.load('poker_range_classifier_proper.pkl')
+        classifier = model_package['model']
+        feature_engineer = model_package['feature_engineer']
+        print("✓ Proper working model loaded successfully")
+    elif os.path.exists('poker_range_classifier_simple.pkl'):
+        # Fallback to simple model
+        model_package = joblib.load('poker_range_classifier_simple.pkl')
+        classifier = model_package['model']
+        feature_engineer = model_package['feature_engineer']
+        print("✓ Simple model loaded successfully")
+    else:
+        print("⚠️ No model files found - will use demo mode")
+        classifier = None
+        feature_engineer = None
     
-    # Extract components from the package
-    classifier = model_package['model']
-    feature_engineer = model_package['feature_engineer']
-    
-    print("✓ Proper working model loaded successfully")
-    print(f"✓ Model type: {type(classifier)}")
-    print(f"✓ Feature engineer type: {type(feature_engineer)}")
+    if classifier is not None:
+        print(f"✓ Model type: {type(classifier)}")
+        print(f"✓ Feature engineer type: {type(feature_engineer)}")
     
 except Exception as e:
     print(f"Error loading model: {e}")
+    print("⚠️ Running in demo mode without ML model")
     classifier = None
     feature_engineer = None
 
