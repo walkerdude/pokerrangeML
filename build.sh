@@ -1,15 +1,16 @@
 #!/bin/bash
-# Build script for Render deployment
+set -e
 
-echo "🚀 Starting build process..."
+echo "🔧 Setting up Python 3.8 environment..."
 
-# Upgrade pip and install build tools
-echo "📦 Upgrading pip and installing build tools..."
-python -m pip install --upgrade pip
-python -m pip install --upgrade setuptools wheel
+# Force Python 3.8
+export PATH="/opt/python/3.8.16/bin:$PATH"
+python3.8 --version
 
-# Install requirements
-echo "📋 Installing Python requirements..."
-pip install -r requirements.txt
+echo "📦 Upgrading pip, setuptools, and wheel..."
+python3.8 -m pip install --upgrade pip setuptools wheel
+
+echo "📚 Installing requirements (Python 3.8 compatible)..."
+python3.8 -m pip install -r requirements_py38.txt
 
 echo "✅ Build completed successfully!"
