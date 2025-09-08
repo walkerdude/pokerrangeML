@@ -2,13 +2,6 @@
 
 A **production-ready machine learning system** that classifies opponent hand ranges into four categories: **Nuts**, **Strong**, **Marginal**, and **Bluff** based on action history and game context. Features a **full-stack web dashboard** for real-time predictions and portfolio integration.
 
-## 🚀 **Live Demo & Portfolio Integration**
-
-- **🌐 Live Web App**: [Deploy to Render/Railway/Heroku](#deployment)
-- **📱 Portfolio Demo**: `portfolio_demo.html` - Ready for portfolio embedding
-- **🔗 Iframe Integration**: Copy-paste code for any website
-- **📊 Real-time Predictions**: Live hand classification with confidence scores
-
 ## 🎯 **System Overview**
 
 This system analyzes poker action sequences to predict the likely strength of an opponent's hand using **advanced feature engineering** and **machine learning**. The trained model achieves **98.7% accuracy** and is deployed as a **production web application**.
@@ -145,25 +138,6 @@ pokermachinelearning/
 | Gradient Boosting | 97.0% | Medium | High precision |
 | Logistic Regression | 98.0% | Very Fast | Baseline |
 | SVM | 96.0% | Slow | Complex patterns |
-
-## 🌐 **Deployment to Live Website**
-
-### **Option 1: Render.com (FREE)**
-1. Connect GitHub repository
-2. Auto-deploy with free tier
-3. Get live URL instantly
-
-### **Option 2: Railway.app (FREE)**
-1. Connect GitHub repository  
-2. Auto-deploy with free tier
-3. Custom domain support
-
-### **Option 3: Heroku ($7/month)**
-1. Install Heroku CLI
-2. `heroku create your-app-name`
-3. `git push heroku main`
-
-**📖 See `DEPLOYMENT.md` for detailed instructions!**
 
 ## 🔧 **Advanced Usage**
 
