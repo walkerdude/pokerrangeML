@@ -1,0 +1,477 @@
+{% extends "base.html" %}
+
+{% block title %}Poker Range Classifier - Home{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Header -->
+    <div class="col-12">
+        <div class="text-center mb-5">
+            <h1 class="display-4 text-primary">
+                <i class="fas fa-spades me-3"></i>
+                Poker Range Classifier
+            </h1>
+            <p class="lead text-muted">
+                Classify opponent hand ranges using machine learning
+            </p>
+            <div class="alert alert-info" role="alert">
+                <i class="fas fa-info-circle me-2"></i>
+                This system analyzes poker action sequences to predict hand strength: <strong>Nuts</strong>, <strong>Strong</strong>, <strong>Marginal</strong>, or <strong>Bluff</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Model Status -->
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-cog me-2"></i>
+                    Model Status
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if model_loaded %}
+                    <div class="alert alert-success" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <strong>Model Loaded Successfully!</strong> Ready to classify hands.
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>No Model Found!</strong> Please train a model first.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Training Section -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-brain me-2"></i>
+                    Train Model
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="trainingForm">
+                    <div class="mb-3">
+                        <label for="numHands" class="form-label">Number of Training Hands</label>
+                        <select class="form-select" id="numHands" name="numHands">
+                            <option value="1000">1,000 hands (Quick)</option>
+                            <option value="5000" selected>5,000 hands (Recommended)</option>
+                            <option value="10000">10,000 hands (Thorough)</option>
+                            <option value="20000">20,000 hands (Comprehensive)</option>
+                        </select>
+                        <div class="form-text">More hands = better accuracy but longer training time</div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100" id="trainBtn">
+                        <i class="fas fa-play me-2"></i>
+                        Train Model
+                    </button>
+                </form>
+                
+                <div id="trainingProgress" class="mt-3" style="display: none;">
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                             role="progressbar" style="width: 0%"></div>
+                    </div>
+                    <small class="text-muted mt-2 d-block">Training in progress...</small>
+                </div>
+                
+                <div id="trainingResult" class="mt-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Classification Section -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-search me-2"></i>
+                    Classify Hand
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="classificationForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="position" class="form-label">Position</label>
+                            <select class="form-select" id="position" name="position" required>
+                                <option value="">Select position...</option>
+                                <option value="0">UTG (Under the Gun)</option>
+                                <option value="1">UTG+1</option>
+                                <option value="2">UTG+2</option>
+                                <option value="3">LJ (Lojack)</option>
+                                <option value="4">HJ (Hijack)</option>
+                                <option value="5">CO (Cutoff)</option>
+                                <option value="6">BTN (Button)</option>
+                                <option value="7">SB (Small Blind)</option>
+                                <option value="8">BB (Big Blind)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="numPlayers" class="form-label">Number of Players</label>
+                            <select class="form-select" id="numPlayers" name="numPlayers" required>
+                                <option value="">Select...</option>
+                                <option value="2">2 (Heads Up)</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6" selected>6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="potSize" class="form-label">Pot Size</label>
+                            <input type="number" class="form-control" id="potSize" name="potSize" 
+                                   value="100" min="10" max="10000" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="stackSize" class="form-label">Stack Size</label>
+                            <input type="number" class="form-control" id="stackSize" name="stackSize" 
+                                   value="1000" min="100" max="10000" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="actions" class="form-label">Action Sequence</label>
+                        <div id="actionContainer">
+                            <div class="input-group mb-2">
+                                <select class="form-select action-select" name="actions[]">
+                                    <option value="">Select action...</option>
+                                    <option value="FOLD">Fold</option>
+                                    <option value="CHECK">Check</option>
+                                    <option value="CALL">Call</option>
+                                    <option value="BET_SMALL">Bet Small</option>
+                                    <option value="BET_MEDIUM">Bet Medium</option>
+                                    <option value="BET_LARGE">Bet Large</option>
+                                    <option value="RAISE_SMALL">Raise Small</option>
+                                    <option value="RAISE_MEDIUM">Raise Medium</option>
+                                    <option value="RAISE_LARGE">Raise Large</option>
+                                    <option value="ALL_IN">All In</option>
+                                </select>
+                                <button type="button" class="btn btn-outline-danger remove-action" style="display: none;">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-outline-primary btn-sm" id="addAction">
+                            <i class="fas fa-plus me-1"></i>Add Action
+                        </button>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-success w-100" id="classifyBtn" 
+                            {% if not model_loaded %}disabled{% endif %}>
+                        <i class="fas fa-search me-2"></i>
+                        Classify Hand
+                    </button>
+                </form>
+                
+                <div id="classificationResult" class="mt-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sample Hand -->
+    {% if sample_hand %}
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-lightbulb me-2"></i>
+                    Sample Hand
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <strong>Position:</strong> {{ sample_hand.position }}
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Pot Size:</strong> ${{ sample_hand.pot_size }}
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Stack Size:</strong> ${{ sample_hand.stack_size }}
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Players:</strong> {{ sample_hand.num_players }}
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <strong>Actions:</strong> 
+                    {% for action in sample_hand.actions %}
+                        <span class="badge bg-secondary me-1">{{ action }}</span>
+                    {% endfor %}
+                </div>
+                <div class="mt-2">
+                    <strong>True Strength:</strong> 
+                    <span class="badge bg-info">{{ sample_hand.hand_strength }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Training functionality
+document.getElementById('trainingForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const trainBtn = document.getElementById('trainBtn');
+    const progress = document.getElementById('trainingProgress');
+    const result = document.getElementById('trainingResult');
+    
+    trainBtn.disabled = true;
+    progress.style.display = 'block';
+    result.innerHTML = '';
+    
+    const numHands = document.getElementById('numHands').value;
+    
+    try {
+        const response = await fetch('/train', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ num_hands: parseInt(numHands) })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            result.innerHTML = `
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <strong>Training Complete!</strong><br>
+                    Accuracy: ${(data.accuracy * 100).toFixed(2)}%<br>
+                    Hands trained: ${data.num_hands.toLocaleString()}<br>
+                    Features: ${data.num_features}
+                </div>
+            `;
+            
+            // Enable classification
+            document.getElementById('classifyBtn').disabled = false;
+            
+            // Reload page to update model status
+            setTimeout(() => location.reload(), 2000);
+        } else {
+            result.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Training Failed:</strong> ${data.error}
+                </div>
+            `;
+        }
+    } catch (error) {
+        result.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Error:</strong> ${error.message}
+            </div>
+        `;
+    } finally {
+        trainBtn.disabled = false;
+        progress.style.display = 'none';
+    }
+});
+
+// Action management
+document.getElementById('addAction').addEventListener('click', function() {
+    const container = document.getElementById('actionContainer');
+    const actionDiv = document.createElement('div');
+    actionDiv.className = 'input-group mb-2';
+    actionDiv.innerHTML = `
+        <select class="form-select action-select" name="actions[]">
+            <option value="">Select action...</option>
+            <option value="FOLD">Fold</option>
+            <option value="CHECK">Check</option>
+            <option value="CALL">Call</option>
+            <option value="BET_SMALL">Bet Small</option>
+            <option value="BET_MEDIUM">Bet Medium</option>
+            <option value="BET_LARGE">Bet Large</option>
+            <option value="RAISE_SMALL">Raise Small</option>
+            <option value="RAISE_MEDIUM">Raise Medium</option>
+            <option value="RAISE_LARGE">Raise Large</option>
+            <option value="ALL_IN">All In</option>
+        </select>
+        <button type="button" class="btn btn-outline-danger remove-action">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+    container.appendChild(actionDiv);
+    
+    // Show remove button for all but first action
+    updateRemoveButtons();
+});
+
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('remove-action')) {
+        e.target.closest('.input-group').remove();
+        updateRemoveButtons();
+    }
+});
+
+function updateRemoveButtons() {
+    const actionGroups = document.querySelectorAll('.input-group');
+    actionGroups.forEach((group, index) => {
+        const removeBtn = group.querySelector('.remove-action');
+        if (index === 0) {
+            removeBtn.style.display = 'none';
+        } else {
+            removeBtn.style.display = 'block';
+        }
+    });
+}
+
+// Classification functionality
+document.getElementById('classificationForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const classifyBtn = document.getElementById('classifyBtn');
+    const result = document.getElementById('classificationResult');
+    
+    classifyBtn.disabled = true;
+    result.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Analyzing...</div>';
+    
+    // Collect form data
+    const formData = {
+        position: document.getElementById('position').value,
+        pot_size: document.getElementById('potSize').value,
+        stack_size: document.getElementById('stackSize').value,
+        num_players: document.getElementById('numPlayers').value,
+        actions: Array.from(document.querySelectorAll('.action-select')).map(select => select.value).filter(val => val)
+    };
+    
+    // Validate that at least one action is selected
+    if (formData.actions.length === 0) {
+        result.innerHTML = `
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Warning:</strong> Please select at least one action before classifying.
+            </div>
+        `;
+        classifyBtn.disabled = false;
+        return;
+    }
+    
+    try {
+        const response = await fetch('/classify', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        const data = await response.json();
+        
+        console.log('Classification response:', data); // Debug logging
+        
+        if (data.error) {
+            result.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Error:</strong> ${data.error}
+                </div>
+            `;
+        } else {
+            // Validate response structure
+            if (!data.prediction) {
+                result.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Error:</strong> Invalid response format from server
+                    </div>
+                `;
+                return;
+            }
+            
+            const prediction = data.prediction;
+            const predictionDetails = data.prediction_details;
+            const probabilities = predictionDetails ? predictionDetails.probabilities : null;
+            
+            result.innerHTML = `
+                <div class="alert alert-info">
+                    <h6><i class="fas fa-chart-pie me-2"></i>Classification Result</h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Predicted Hand Strength:</strong><br>
+                            <span class="badge bg-primary fs-6">${prediction}</span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Confidence:</strong><br>
+                            <span class="badge bg-success">${predictionDetails ? (predictionDetails.confidence * 100).toFixed(1) : 'N/A'}%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                ${probabilities ? `
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">Probability Distribution</h6>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="probabilityChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+                ` : ''}
+            `;
+            
+            // Create probability chart if probabilities are available
+            if (probabilities) {
+                const ctx = document.getElementById('probabilityChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(probabilities),
+                        datasets: [{
+                            data: Object.values(probabilities),
+                            backgroundColor: [
+                                '#dc3545', // Nuts - Red
+                                '#fd7e14', // Strong - Orange
+                                '#ffc107', // Marginal - Yellow
+                                '#198754'  // Bluff - Green
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    } catch (error) {
+        console.error('Classification error:', error); // Debug logging
+        result.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Error:</strong> ${error.message}
+                <br><small class="text-muted">Check the browser console for more details.</small>
+            </div>
+        `;
+    } finally {
+        classifyBtn.disabled = false;
+    }
+});
+</script>
+{% endblock %}

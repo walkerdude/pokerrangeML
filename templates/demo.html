@@ -1,0 +1,317 @@
+{% extends "base.html" %}
+
+{% block title %}Poker Range Classifier - Demo{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Header -->
+    <div class="col-12">
+        <div class="text-center mb-4">
+            <h1 class="display-5 text-primary">
+                <i class="fas fa-play me-3"></i>
+                Demo Hands
+            </h1>
+            <p class="lead text-muted">
+                See the system in action with sample poker hands
+            </p>
+        </div>
+    </div>
+
+    {% if not model_loaded %}
+    <div class="col-12">
+        <div class="alert alert-warning" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>No Model Available!</strong> Please train a model first on the home page.
+        </div>
+    </div>
+    {% else %}
+    
+    <!-- Demo Instructions -->
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    How to Use
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Sample Hands</h6>
+                        <p>Below are 5 randomly generated poker hands with their true hand strengths. Click "Classify" to see how well the model predicts each hand.</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Understanding Results</h6>
+                        <ul class="mb-0">
+                            <li><strong>Nuts:</strong> Premium hands (AA, KK, AKs)</li>
+                            <li><strong>Strong:</strong> Good hands (AQ, JJ, TT)</li>
+                            <li><strong>Marginal:</strong> Medium hands (A9, KQ, 88)</li>
+                            <li><strong>Bluff:</strong> Weak hands and bluffs</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sample Hands -->
+    {% for hand in sample_hands %}
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-cards-blank me-2"></i>
+                    Hand {{ hand.id }}
+                </h5>
+                <span class="badge bg-info">{{ hand.true_strength }}</span>
+            </div>
+            <div class="card-body">
+                <!-- Hand Details -->
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <small class="text-muted">Position</small><br>
+                        <strong>{{ hand.position }}</strong>
+                    </div>
+                    <div class="col-6">
+                        <small class="text-muted">Players</small><br>
+                        <strong>{{ hand.num_players }}</strong>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <small class="text-muted">Pot Size</small><br>
+                        <strong>${{ hand.pot_size }}</strong>
+                    </div>
+                    <div class="col-6">
+                        <small class="text-muted">Stack Size</small><br>
+                        <strong>${{ hand.stack_size }}</strong>
+                    </div>
+                </div>
+                
+                <!-- Actions -->
+                <div class="mb-3">
+                    <small class="text-muted">Actions</small><br>
+                    {% for action in hand.actions %}
+                        <span class="badge bg-secondary me-1">{{ action }}</span>
+                    {% endfor %}
+                </div>
+                
+                <!-- Classification Button -->
+                <button class="btn btn-primary w-100 classify-hand-btn" 
+                        data-hand-id="{{ hand.id }}"
+                        data-hand-data="{{ hand | tojson }}">
+                    <i class="fas fa-search me-2"></i>
+                    Classify This Hand
+                </button>
+                
+                <!-- Result Area -->
+                <div id="result-{{ hand.id }}" class="mt-3"></div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    
+    <!-- Batch Classification -->
+    <div class="col-12 mt-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-rocket me-2"></i>
+                    Batch Classification
+                </h5>
+            </div>
+            <div class="card-body">
+                <p>Classify all hands at once to see the overall performance:</p>
+                <button class="btn btn-success" id="classifyAllBtn">
+                    <i class="fas fa-play me-2"></i>
+                    Classify All Hands
+                </button>
+                
+                <div id="batchResults" class="mt-3"></div>
+            </div>
+        </div>
+    </div>
+    
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Individual hand classification
+document.querySelectorAll('.classify-hand-btn').forEach(btn => {
+    btn.addEventListener('click', async function() {
+        const handId = this.dataset.handId;
+        const handData = JSON.parse(this.dataset.handData);
+        const resultDiv = document.getElementById(`result-${handId}`);
+        
+        this.disabled = true;
+        this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Analyzing...';
+        resultDiv.innerHTML = '';
+        
+        try {
+            const response = await fetch('/classify', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    position: handData.position,
+                    pot_size: handData.pot_size,
+                    stack_size: handData.stack_size,
+                    num_players: handData.num_players,
+                    actions: handData.actions
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.error) {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        ${data.error}
+                    </div>
+                `;
+            } else {
+                const prediction = data.prediction;
+                const isCorrect = prediction.predicted_class === handData.true_strength;
+                
+                resultDiv.innerHTML = `
+                    <div class="alert ${isCorrect ? 'alert-success' : 'alert-warning'}">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>Predicted:</strong> 
+                                <span class="badge bg-primary">${prediction.predicted_class}</span>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>True:</strong> 
+                                <span class="badge bg-info">${handData.true_strength}</span>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <strong>Confidence:</strong> ${(prediction.confidence * 100).toFixed(1)}%
+                        </div>
+                        <div class="mt-2">
+                            <strong>Result:</strong> 
+                            <span class="badge ${isCorrect ? 'bg-success' : 'bg-danger'}">
+                                ${isCorrect ? 'Correct' : 'Incorrect'}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            resultDiv.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Error: ${error.message}
+                </div>
+            `;
+        } finally {
+            this.disabled = false;
+            this.innerHTML = '<i class="fas fa-search me-2"></i>Classify This Hand';
+        }
+    });
+});
+
+// Batch classification
+document.getElementById('classifyAllBtn').addEventListener('click', async function() {
+    const btn = this;
+    const resultsDiv = document.getElementById('batchResults');
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Classifying All Hands...';
+    resultsDiv.innerHTML = '';
+    
+    const hands = {{ sample_hands | tojson }};
+    const results = [];
+    let correct = 0;
+    
+    for (const hand of hands) {
+        try {
+            const response = await fetch('/classify', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    position: hand.position,
+                    pot_size: hand.pot_size,
+                    stack_size: hand.stack_size,
+                    num_players: hand.num_players,
+                    actions: hand.actions
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (!data.error) {
+                const prediction = data.prediction;
+                const isCorrect = prediction.predicted_class === hand.true_strength;
+                if (isCorrect) correct++;
+                
+                results.push({
+                    handId: hand.id,
+                    predicted: prediction.predicted_class,
+                    true: hand.true_strength,
+                    confidence: prediction.confidence,
+                    correct: isCorrect
+                });
+            }
+        } catch (error) {
+            console.error(`Error classifying hand ${hand.id}:`, error);
+        }
+    }
+    
+    const accuracy = (correct / hands.length) * 100;
+    
+    resultsDiv.innerHTML = `
+        <div class="alert alert-info">
+            <h6><i class="fas fa-chart-bar me-2"></i>Batch Classification Results</h6>
+            <div class="row">
+                <div class="col-md-4">
+                    <strong>Accuracy:</strong> ${accuracy.toFixed(1)}%
+                </div>
+                <div class="col-md-4">
+                    <strong>Correct:</strong> ${correct}/${hands.length}
+                </div>
+                <div class="col-md-4">
+                    <strong>Average Confidence:</strong> ${(results.reduce((sum, r) => sum + r.confidence, 0) / results.length * 100).toFixed(1)}%
+                </div>
+            </div>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>Hand</th>
+                        <th>Predicted</th>
+                        <th>True</th>
+                        <th>Confidence</th>
+                        <th>Result</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${results.map(r => `
+                        <tr>
+                            <td>${r.handId}</td>
+                            <td><span class="badge bg-primary">${r.predicted}</span></td>
+                            <td><span class="badge bg-info">${r.true}</span></td>
+                            <td>${(r.confidence * 100).toFixed(1)}%</td>
+                            <td><span class="badge ${r.correct ? 'bg-success' : 'bg-danger'}">${r.correct ? 'Correct' : 'Incorrect'}</span></td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+    
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-play me-2"></i>Classify All Hands';
+});
+</script>
+{% endblock %}
