@@ -1,4 +1,4 @@
-# 🎯 Poker Range Classification System
+# 🎯 Poker Range Classification Systems
 
 A **production-ready machine learning system** that classifies opponent hand ranges into four categories: **Nuts**, **Strong**, **Marginal**, and **Bluff** based on action history and game context. Features a **full-stack web dashboard** for real-time predictions and portfolio integration.
 
